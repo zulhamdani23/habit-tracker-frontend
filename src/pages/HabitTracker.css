@@ -18,10 +18,10 @@
 }
 
 .habit-name {
-  font-weight: 600;
-  text-align: left;
-  padding-left: 10px;
-  background: black;
+  text-align: left !important;
+  padding-left: 8px;
+  font-weight: 500;
+  white-space: nowrap; /* biar tidak patah */
 }
 
 .cell {
@@ -51,5 +51,16 @@
 .selector-row select {
   padding: 6px 10px;
   font-size: 16px;
+}
+
+.month-year-select {
+  margin-bottom: 20px;
+  display: flex;
+  gap: 10px;
+}
+
+.month-year-select select {
+  padding: 6px 10px;
+  font-size: 14px;
 }
 

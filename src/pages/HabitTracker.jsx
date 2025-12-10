@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "./HabitTracker.css";
 
 export default function HabitTracker() {
@@ -15,30 +15,57 @@ export default function HabitTracker() {
     "Meditate for 10 Minutes",
   ];
 
-  const days = Array.from({ length: 31 }, (_, i) => i + 1);
+  // -----------------------------
+  // STATE BULAN & TAHUN
+  // -----------------------------
+  const monthNames = [
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"
+  ];
 
-  // INISIAL STATE
-  const [progress, setProgress] = useState(() => {
+  const currentYear = new Date().getFullYear();
+  const currentMonth = new Date().getMonth(); 
+
+  const [month, setMonth] = useState(currentMonth);
+  const [year, setYear] = useState(currentYear);
+
+  // -----------------------------
+  // HITUNG HARI PER BULAN & TAHUN
+  // -----------------------------
+  const getDaysInMonth = (month, year) => {
+    return new Date(year, month + 1, 0).getDate(); 
+  };
+
+  const days = Array.from({ length: getDaysInMonth(month, year) }, (_, i) => i + 1);
+
+  // -----------------------------
+  // PROGRESS STATE (DYNAMIC LENGTH)
+  // -----------------------------
+  const [progress, setProgress] = useState({});
+
+  // Reset progress saat bulan/tahun berubah
+  useEffect(() => {
     const p = {};
     habitNames.forEach((h) => {
       p[h] = Array(days.length).fill(false);
     });
-    return p;
-  });
+    setProgress(p);
+  }, [month, year]);
 
   // -----------------------------
-  // TOGGLE CELL + HIT API UPDATE
+  // TOGGLE CELL + CALL API
   // -----------------------------
   const toggleCell = async (habit, dayIndex) => {
     const newValue = !progress[habit][dayIndex];
 
     try {
-      // CALL API
       const res = await fetch("/api/habit/update", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           habit_name: habit,
+          year,
+          month: month + 1,
           day: dayIndex + 1,
           is_done: newValue,
         }),
@@ -46,12 +73,9 @@ export default function HabitTracker() {
 
       if (!res.ok) throw new Error("Update gagal");
 
-      // UPDATE STATE SAAT API SUKSES
       setProgress((prev) => ({
         ...prev,
-        [habit]: prev[habit].map((v, idx) =>
-          idx === dayIndex ? newValue : v
-        ),
+        [habit]: prev[habit].map((v, idx) => (idx === dayIndex ? newValue : v)),
       }));
     } catch (err) {
       console.error(err);
@@ -61,8 +85,28 @@ export default function HabitTracker() {
 
   return (
     <div className="tracker-container">
-      <h1>January Habit Tracker</h1>
+      {/* ------------------------ */}
+      {/* DROPDOWN PILIH BULAN/TAHUN */}
+      {/* ------------------------ */}
+      <div className="month-year-select">
+        <select value={month} onChange={(e) => setMonth(Number(e.target.value))}>
+          {monthNames.map((m, i) => (
+            <option key={i} value={i}>
+              {m}
+            </option>
+          ))}
+        </select>
 
+        <select value={year} onChange={(e) => setYear(Number(e.target.value))}>
+          {Array.from({ length: 5 }, (_, i) => currentYear - 2 + i).map((y) => (
+            <option key={y}>{y}</option>
+          ))}
+        </select>
+      </div>
+      <h4>Habit Tracker {monthNames[month]} {year}</h4>
+      {/* ------------------------ */}
+      {/* TABEL HABIT */}
+      {/* ------------------------ */}
       <table className="habit-table">
         <colgroup>
           <col style={{ width: "180px" }} />
@@ -70,10 +114,10 @@ export default function HabitTracker() {
             <col key={i} style={{ width: "35px" }} />
           ))}
         </colgroup>
+
         <thead>
           <tr>
             <th className="habit-title">DAILY HABITS</th>
-
             {days.map((d) => (
               <th key={d} className="day-header">
                 {d}
@@ -87,7 +131,7 @@ export default function HabitTracker() {
             <tr key={habit}>
               <td className="habit-name">{habit}</td>
 
-              {progress[habit].map((checked, i) => (
+              {progress[habit]?.map((checked, i) => (
                 <td
                   key={i}
                   className={`cell ${checked ? "checked" : ""}`}
