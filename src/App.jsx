@@ -1,20 +1,7 @@
-import { useState } from "react";
-import Habits from "./pages/Habits";
-import HabitList from "./pages/HabitList";
+import HabitTracker from "./pages/HabitTracker";
 
-export default function App() {
-  const [refresh, setRefresh] = useState(false);
-console.log("App rendered!");
-
-  return (
-    <div style={{ 
-      maxWidth: 500, 
-      margin: "0 auto",
-      padding: "20px",
-      fontFamily: "sans-serif"}}>
-      <h1>Habit Tracker</h1>
-      <HabitList onAdded={() => setRefresh(!refresh)} />
-      <Habits refresh={refresh} />
-    </div>
-  );
+function App() {
+  return <HabitTracker />;
 }
+
+export default App;

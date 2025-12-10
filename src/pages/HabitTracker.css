@@ -1,0 +1,85 @@
+/* Reset styling global Vite untuk halaman tracker */
+body {
+  display: block !important;
+  place-items: unset !important;
+  background-color: #ffffff !important;
+  color: #222 !important;
+}
+
+#root {
+  text-align: left !important;
+  padding: 0 !important;
+  max-width: 100% !important;
+}
+
+.tracker-container {
+  width: 95%;
+  margin: 20px auto;
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+/* Grid container */
+.tracker-grid {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+/* Row */
+.grid-row {
+  display: grid;
+  grid-template-columns: 230px repeat(31, 28px);
+}
+
+/* header */
+.header {
+  background: #dce9f7;
+  font-weight: bold;
+}
+
+.habit-title {
+  padding: 8px;
+  border-right: 1px solid #aaa;
+}
+
+/* habit name left column */
+.habit-name {
+  padding: 6px;
+  font-size: 14px;
+  border-right: 1px solid #ccc;
+  background: #f6f6f6;
+}
+
+/* day numbers */
+.day-cell {
+  text-align: center;
+  padding: 0;
+  border-left: 1px solid #ccc;
+}
+
+/* daily cell */
+.cell {
+  width: 100%;
+  height: 25px;
+  border-left: 1px solid #ccc;
+  border-bottom: 1px solid #ccc;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.checked {
+  background: rgba(0, 0, 0, 0.1);
+  font-weight: bold;
+}
+
+/* WEEK COLORS */
+.week-1 { background: #ffd1e8; }   /* pink */
+.week-2 { background: #e4c7ff; }   /* purple */
+.week-3 { background: #cfe2ff; }   /* blue */
+.week-4 { background: #d9f7d8; }   /* green */
+.week-5 { background: #fff4cc; }   /* extra days */
