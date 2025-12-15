@@ -19,6 +19,10 @@ export default function HabitTracker() {
   fetchData();
   }, []);
 
+  const habitNamesDummy = [
+    "Shalat Subuh di Mesjid"
+  ];
+
   // const habitNames = habitNamesDummy
   const habitNames = habitList
 
@@ -68,17 +72,26 @@ export default function HabitTracker() {
     const newValue = !progress[habit][dayIndex];
 
     try {
-      const payload = {
-        habitName: habit,
-        year,
-        month: month + 1,
-        day: dayIndex + 1,
-        isDone: newValue
-      }
 
-      const res = await api.putHabit(payload)
 
-      if (!res.success) throw new Error("Update gagal");
+      // const res = await api.putHabit(payload)
+      // const res = await fetch("/api/habit/update", {
+      //   method: "PUT",
+      //   headers: { "Content-Type": "application/json" },
+      //   body: JSON.stringify({
+      //     habitName: habit,
+      //     year,
+      //     month: month + 1,
+      //     day: dayIndex + 1,
+      //     isDone: newValue
+      //   }),
+      // });
+
+      const res = {"ok" : true}
+
+      // res.ok = true;
+
+      if (!res.ok) throw new Error("Update gagal");
 
       setProgress((prev) => ({
         ...prev,

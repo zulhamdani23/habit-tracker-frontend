@@ -1,3 +1,6 @@
+.tracker-container {
+  padding: 1ch;
+}
 .habit-table {
   width: 100%;
   border-collapse: collapse;
@@ -6,22 +9,24 @@
 
 .habit-table th,
 .habit-table td {
-  border: 1px solid #ccc;
+  border: 2px solid #153b63;
   padding: 6px;
   text-align: center;
 }
 
 .habit-title {
-  background: #153b63;
+  background: #e6d2aa;
   width: 200px;
   font-weight: bold;
+  color: #153b63
 }
 
 .habit-name {
   text-align: left !important;
   padding-left: 8px;
   font-weight: 500;
-  white-space: nowrap; /* biar tidak patah */
+  white-space: nowrap;
+  color: #153b63; /* biar tidak patah */
 }
 
 .cell {
@@ -31,7 +36,7 @@
 
 .cell.checked {
   background: #4caf50;
-  color: white;
+  color: #153b63;
   font-weight: bold;
 }
 
@@ -57,10 +62,28 @@
   margin-bottom: 20px;
   display: flex;
   gap: 10px;
+  color: #153b63;
+}
+
+.sel {
+background-color: #e6d2aa;
+color: #153b63;
+border: 2px solid #153b63;
 }
 
 .month-year-select select {
   padding: 6px 10px;
   font-size: 14px;
+}
+
+.day-header, h4 {
+   color: #153b63;
+}
+
+.btn {
+  background-color: #e6d2aa;
+  color: #153b63;
+  border: 2px solid #153b63;
+  margin-top: 12px;
 }
 
