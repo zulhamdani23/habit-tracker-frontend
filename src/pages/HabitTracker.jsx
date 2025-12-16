@@ -50,16 +50,57 @@ export default function HabitTracker() {
   // -----------------------------
   const [progress, setProgress] = useState({});
 
+  const getProgress = async () => {
+    const month2 = month + 1
+    const payload = {
+      year : `"${year}"`,
+      month : `"${month2}"`
+    }
+    return await api.getHabitProgress(payload);
+  };
+
+
   // Reset progress saat bulan/tahun berubah
+  // useEffect(() => {
+  //   // if (loading) return;
+  //   if (habitNames.length === 0) return; 
+  //   const p = {};
+  //   habitNames.forEach((h) => {
+  //     p[h] = Array(days.length).fill(false);
+  //   });
+  //   setProgress(p);
+  // }, [habitNames, month, year]);
+
   useEffect(() => {
-    // if (loading) return;
-    if (habitNames.length === 0) return; 
+  const loadProgress = async () => {
+    if (habitNames.length === 0) return;
+
+    // ambil data seperti { "22": ["Tahajjud"], "27": ["Subuh di Mesjid"] }
+    const progressRaw = await getProgress();
+
     const p = {};
-    habitNames.forEach((h) => {
-      p[h] = Array(days.length).fill(false);
+
+    habitNames.forEach(habit => {
+      p[habit] = Array(days.length).fill(false); 
     });
+
+    // mapping db.json → progress array
+    Object.entries(progressRaw).forEach(([day, habits]) => {
+      const dayIndex = Number(day) - 1;
+
+      habits.forEach(habitName => {
+        if (p[habitName]) {
+          p[habitName][dayIndex] = true;
+        }
+      });
+    });
+
     setProgress(p);
-  }, [habitNames, month, year]);
+  };
+
+  loadProgress();
+}, [habitNames, month, year]);
+
 
   // -----------------------------
   // TOGGLE CELL + CALL API

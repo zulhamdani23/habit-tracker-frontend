@@ -13,14 +13,29 @@ const api = {
   },
 
   putHabit: async (payload) => {
-    console.log('111', payload)
+    // console.log('111', payload)
     const { data } = await axios.put(`${API_URL}/update`, payload, {
         headers: {
             "Content-Type": "application/json",
         },
     });
-    console.log('9', data)
+    // console.log('9', data)
     return data.data || data;
+  },
+
+  getHabitProgress: async (payload) => {
+    console.log({payload})
+    try {
+      const { data } = await axios.post(`${API_URL}/habit/progress`, payload, {
+          headers: {
+              "Content-Type": "application/json",
+          },
+      });
+      console.log('9', data)
+      return data.data || data;
+    } catch (error) {
+      console.log('e', error)
+    }
   }
 };
 
