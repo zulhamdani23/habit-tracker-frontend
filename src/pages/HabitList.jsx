@@ -8,6 +8,11 @@ function HabitList() {
   const [name, setName] = useState("");
   const [editingId, setEditingId] = useState(null);
 
+  const getHabitList = async () => {
+    const data = await api.getHabitList();
+    setHabits(data);
+  }
+
   // GET habits on load
   useEffect(() => {
     fetch(API_URL)

@@ -35,7 +35,7 @@
 }
 
 .cell.checked {
-  background: #4caf50;
+  /* background: #4caf50; */
   color: #153b63;
   font-weight: bold;
 }
@@ -87,3 +87,9 @@ border: 2px solid #153b63;
   margin-top: 12px;
 }
 
+.no-data {
+  text-align: center;
+  margin: 20px 0;
+  color: #888;
+  font-style: italic;
+}

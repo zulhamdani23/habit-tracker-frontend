@@ -5,11 +5,16 @@ import api from "../services/api"
 export default function HabitTracker() {
   const [habitList, setHabitList] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [showModal, setShowModal] = useState(false);
 
   const getHabitList = async () => {
     const data = await api.getHabitList();
     setHabitList(data);
   }
+
+  const handleAdd = () => {
+    setShowModal(true);
+  };
 
   useEffect(() => {
   const fetchData = async () => {
@@ -19,7 +24,6 @@ export default function HabitTracker() {
   fetchData();
   }, []);
 
-  // const habitNames = habitNamesDummy
   const habitNames = habitList
 
   // -----------------------------
@@ -50,56 +54,36 @@ export default function HabitTracker() {
   // -----------------------------
   const [progress, setProgress] = useState({});
 
-  const getProgress = async () => {
+  const postProgress = async () => {
     const month2 = month + 1
     const payload = {
       year : `"${year}"`,
       month : `"${month2}"`
     }
-    return await api.getHabitProgress(payload);
+    return await api.postHabitProgress(payload);
   };
-
-
-  // Reset progress saat bulan/tahun berubah
-  // useEffect(() => {
-  //   // if (loading) return;
-  //   if (habitNames.length === 0) return; 
-  //   const p = {};
-  //   habitNames.forEach((h) => {
-  //     p[h] = Array(days.length).fill(false);
-  //   });
-  //   setProgress(p);
-  // }, [habitNames, month, year]);
 
   useEffect(() => {
-  const loadProgress = async () => {
-    if (habitNames.length === 0) return;
+    const loadProgress = async () => {
+      if (habitNames.length === 0) return;
+      // ambil data seperti { "22": ["Tahajjud"], "27": ["Subuh di Mesjid"] }
+      const progressRaw = await postProgress();
 
-    // ambil data seperti { "22": ["Tahajjud"], "27": ["Subuh di Mesjid"] }
-    const progressRaw = await getProgress();
+      const p = {}; habitNames.forEach(habit => { p[habit] = Array(days.length).fill(false); }); 
+      // mapping db.json → progress array 
+      Object.entries(progressRaw).forEach(([day, habits]) => {
+         const dayIndex = Number(day) - 1; 
+         habits.forEach(habitName => {
+           if (p[habitName]) { p[habitName][dayIndex] = true; 
+           } 
+          }); 
+        });
 
-    const p = {};
+      setProgress(p);
+    };
 
-    habitNames.forEach(habit => {
-      p[habit] = Array(days.length).fill(false); 
-    });
-
-    // mapping db.json → progress array
-    Object.entries(progressRaw).forEach(([day, habits]) => {
-      const dayIndex = Number(day) - 1;
-
-      habits.forEach(habitName => {
-        if (p[habitName]) {
-          p[habitName][dayIndex] = true;
-        }
-      });
-    });
-
-    setProgress(p);
-  };
-
-  loadProgress();
-}, [habitNames, month, year]);
+    loadProgress();
+  }, [habitNames, month, year]);
 
 
   // -----------------------------
@@ -155,45 +139,46 @@ export default function HabitTracker() {
       {/* ------------------------ */}
       {/* TABEL HABIT */}
       {/* ------------------------ */}
-      <table className="habit-table">
-        <colgroup>
-          <col style={{ width: "180px" }} />
-          {days.map((_, i) => (
-            <col key={i} style={{ width: "35px" }} />
-          ))}
-        </colgroup>
-
-        <thead>
-          <tr>
-            <th className="habit-title">DAILY HABITS</th>
-            {days.map((d) => (
-              <th key={d} className="day-header">
-                {d}
-              </th>
+    
+        <table className="habit-table">
+          <colgroup>
+            <col style={{ width: "180px" }} />
+            {days.map((_, i) => (
+              <col key={i} style={{ width: "35px" }} />
             ))}
-          </tr>
-        </thead>
+          </colgroup>
 
-        <tbody>
-          {habitNames.map((habit) => (
-            <tr key={habit}>
-              <td className="habit-name">{habit}</td>
-
-              {progress[habit]?.map((checked, i) => (
-                <td
-                  key={i}
-                  className={`cell ${checked ? "checked" : ""}`}
-                  onClick={() => toggleCell(habit, i)}
-                >
-                  {checked ? "✔" : ""}
-                </td>
+          <thead>
+            <tr>
+              <th className="habit-title">DAILY HABITS</th>
+              {days.map((d) => (
+                <th key={d} className="day-header">
+                  {d}
+                </th>
               ))}
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
 
-      
+          <tbody>
+            {habitNames.map((habit) => (
+              <tr key={habit}>
+                <td className="habit-name">{habit}</td>
+
+                {progress[habit]?.map((checked, i) => (
+                  <td
+                    key={i}
+                    className={`cell ${checked ? "checked" : ""}`}
+                    onClick={() => toggleCell(habit, i)}
+                  >
+                    {checked ? "✔" : ""}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+     
+
       <div>
         <a href="/update-habit" target="_blank">
           <button className="btn">Update List Habit</button>
