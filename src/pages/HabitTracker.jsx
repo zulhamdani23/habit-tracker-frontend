@@ -24,8 +24,6 @@ export default function HabitTracker() {
   fetchData();
   }, []);
 
-  const habitNames = habitList
-
   // -----------------------------
   // STATE BULAN & TAHUN
   // -----------------------------
@@ -48,6 +46,7 @@ export default function HabitTracker() {
   };
 
   const days = Array.from({ length: getDaysInMonth(month, year) }, (_, i) => i + 1);
+  const dy = days.length
 
   // -----------------------------
   // PROGRESS STATE (DYNAMIC LENGTH)
@@ -57,44 +56,36 @@ export default function HabitTracker() {
   const postProgress = async () => {
     const month2 = month + 1
     const payload = {
-      year : `"${year}"`,
-      month : `"${month2}"`
+      days : dy,
+      year : `${year}`,
+      month : `${month2}`
     }
     return await api.postHabitProgress(payload);
   };
 
   useEffect(() => {
     const loadProgress = async () => {
-      if (habitNames.length === 0) return;
-      // ambil data seperti { "22": ["Tahajjud"], "27": ["Subuh di Mesjid"] }
+      if (habitList.length === 0) return;
       const progressRaw = await postProgress();
-
-      const p = {}; habitNames.forEach(habit => { p[habit] = Array(days.length).fill(false); }); 
-      // mapping db.json → progress array 
-      Object.entries(progressRaw).forEach(([day, habits]) => {
-         const dayIndex = Number(day) - 1; 
-         habits.forEach(habitName => {
-           if (p[habitName]) { p[habitName][dayIndex] = true; 
-           } 
-          }); 
-        });
-
-      setProgress(p);
+      setProgress(progressRaw);
     };
 
     loadProgress();
-  }, [habitNames, month, year]);
+  }, [habitList, month, year]);
 
 
   // -----------------------------
   // TOGGLE CELL + CALL API
   // -----------------------------
-  const toggleCell = async (habit, dayIndex) => {
-    const newValue = !progress[habit][dayIndex];
+  
+
+  
+  const toggleCell = async (id, dayIndex) => {
+    const newValue = !progress[id][dayIndex];
 
     try {
       const payload = {
-        habitName: habit,
+        idHabit: id,
         year,
         month: month + 1,
         day: dayIndex + 1,
@@ -103,11 +94,11 @@ export default function HabitTracker() {
 
       const res = await api.putHabit(payload)
 
-      if (!res.success) throw new Error("Update gagal");
+      if (!res) throw new Error("Update gagal");
 
       setProgress((prev) => ({
         ...prev,
-        [habit]: prev[habit].map((v, idx) => (idx === dayIndex ? newValue : v)),
+        [id]: prev[id].map((v, idx) => (idx === dayIndex ? newValue : v)),
       }));
     } catch (err) {
       console.error(err);
@@ -160,15 +151,15 @@ export default function HabitTracker() {
           </thead>
 
           <tbody>
-            {habitNames.map((habit) => (
-              <tr key={habit}>
-                <td className="habit-name">{habit}</td>
+            {habitList.map((e) => (
+              <tr key={e.id}>
+                <td className="habit-name">{e.habitName}</td>
 
-                {progress[habit]?.map((checked, i) => (
+                {progress[e.id]?.map((checked, i) => (
                   <td
-                    key={i}
+                    key={i-1}
                     className={`cell ${checked ? "checked" : ""}`}
-                    onClick={() => toggleCell(habit, i)}
+                    onClick={() => toggleCell(e.id, i)}
                   >
                     {checked ? "✔" : ""}
                   </td>
